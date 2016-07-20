@@ -490,16 +490,21 @@ const Carousel = React.createClass({
       }
     }
 
-    this.props.beforeSlide(this.state.currentSlide, index);
+    var slideWillChange = this.props.beforeSlide(this.state.currentSlide, index);
 
-    this.setState({
-      currentSlide: index
-    }, function() {
-      self.animateSlide();
-      this.props.afterSlide(index);
-      self.resetAutoplay();
-      self.setExternalData();
-    });
+    // If the beforeSlide hook explicitly returns 'false' then don't change slide
+    if(slideWillChange === false) {
+      self.animateSlide(); // animate back to position
+    } else {
+      this.setState({
+        currentSlide: index
+      }, function() {
+        self.animateSlide();
+        this.props.afterSlide(index);
+        self.resetAutoplay();
+        self.setExternalData();
+      });
+    }
   },
 
   nextSlide() {
